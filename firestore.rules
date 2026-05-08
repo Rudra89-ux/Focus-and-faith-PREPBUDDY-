@@ -1,0 +1,95 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // User Profile Rules
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (isOwner(userId) || resource.data.isPublic == true);
+      
+      allow create: if isOwner(userId) 
+        && isValidUser(incoming())
+        && incoming().coins == 0
+        && incoming().xp == 0
+        && incoming().rank == "Bronze";
+        
+      allow update: if isOwner(userId)
+        && isValidUser(incoming())
+        && (
+          // Standard progression
+          (incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'blockedApps', 'activeTheme'])) ||
+          // Gamification updates (should ideally be server-side or strictly checked)
+          (incoming().diff(existing()).affectedKeys().hasAny(['coins', 'xp', 'rank', 'streak', 'skipCount', 'totalFocusMinutes']))
+        );
+
+      function isValidUser(data) {
+        return data.userId == request.auth.uid
+          && data.email is string
+          && data.displayName is string && data.displayName.size() <= 50
+          && data.coins is int && data.coins >= 0
+          && data.xp is int && data.xp >= 0
+          && data.streak is int && data.streak >= 0
+          && data.skipCount is int && data.skipCount >= 0 && data.skipCount <= 3;
+      }
+
+      // User subcollections
+      match /sessions/{sessionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidSession(incoming());
+        allow update: if isOwner(userId) && isValidSession(incoming());
+      }
+
+      match /tasks/{taskId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidTask(incoming());
+        allow update: if isOwner(userId) && isValidTask(incoming());
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Leaderboards
+    match /leaderboards/{boardId}/entries/{entryId} {
+      allow read: if isSignedIn();
+      allow write: if false; // System only or very restricted
+    }
+
+    function isValidSession(data) {
+      return data.userId == request.auth.uid
+        && data.startTime is string
+        && data.mode in ['Study', 'Grind']
+        && data.status in ['active', 'completed', 'interrupted'];
+    }
+
+    function isValidTask(data) {
+      return data.userId == request.auth.uid
+        && data.title is string && data.title.size() <= 100
+        && data.isCompleted is bool;
+    }
+  }
+}

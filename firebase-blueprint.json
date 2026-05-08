@@ -1,0 +1,87 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Represents a user of PrepBuddy.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "coins": { "type": "integer" },
+        "xp": { "type": "integer" },
+        "rank": { "type": "string", "enum": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Legend"] },
+        "streak": { "type": "integer" },
+        "skipCount": { "type": "integer" },
+        "lastSkipReset": { "type": "string", "format": "date-time" },
+        "blockedApps": { "type": "array", "items": { "type": "string" } },
+        "ownedItems": { "type": "array", "items": { "type": "string" } },
+        "activeTheme": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "totalFocusMinutes": { "type": "integer" }
+      },
+      "required": ["userId", "email", "displayName", "coins", "xp", "rank", "streak", "skipCount"]
+    },
+    "FocusSession": {
+      "title": "Focus Session",
+      "description": "A study session recorded by the user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "durationMinutes": { "type": "integer" },
+        "mode": { "type": "string", "enum": ["Study", "Grind"] },
+        "status": { "type": "string", "enum": ["active", "completed", "interrupted"] },
+        "skipsUsed": { "type": "integer" },
+        "coinsEarned": { "type": "integer" },
+        "xpEarned": { "type": "integer" },
+        "distractionsDetected": { "type": "integer" }
+      },
+      "required": ["userId", "startTime", "mode", "status"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "A user-defined productivity task.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "isCompleted": { "type": "boolean" },
+        "dueDate": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "completionTime": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "isCompleted", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data."
+    },
+    "/users/{userId}/sessions/{sessionId}": {
+      "schema": "FocusSession",
+      "description": "User's focus history."
+    },
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "User's task list."
+    },
+    "/leaderboards/global/entries/{userId}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "displayName": { "type": "string" },
+          "rank": { "type": "string" },
+          "xp": { "type": "integer" },
+          "totalFocusMinutes": { "type": "integer" }
+        }
+      },
+      "description": "Global leaderboard entry."
+    }
+  }
+}

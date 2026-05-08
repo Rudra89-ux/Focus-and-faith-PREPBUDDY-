@@ -1,0 +1,19 @@
+{
+  "name": "PrepBuddy",
+  "description": "A premium focus and productivity app for students, featuring AI accountability, gamification, and social competition.",
+  "requestFramePermissions": [
+    "notifications",
+    "display-capture",
+    "camera"
+  ],
+  "majorCapabilities": [
+    "AI accountability",
+    "Gamified productivity",
+    "Social leaderboards",
+    "Real-time focus lock",
+    "Distraction blocking management",
+    "Session time customization",
+    "App usage tracking simulation",
+    "Enhanced skip protection"
+  ]
+}
