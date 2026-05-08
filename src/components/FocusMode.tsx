@@ -168,12 +168,24 @@ export const FocusMode: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
         <div className="w-full flex justify-between items-center z-10">
           <div className="flex flex-col">
             <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest leading-none">Status</span>
-            <span className="text-white text-sm font-medium">Locked in {mode}</span>
+            <div className="flex items-center gap-2 mt-1">
+              <motion.div
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className={cn("w-2 h-2 rounded-full", mode === 'Grind' ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-cyan-500 shadow-[0_0_8px_cyan]")}
+              />
+              <span className="text-white text-sm font-medium">Locked in {mode}</span>
+            </div>
           </div>
           {!isActive && (
-            <button onClick={onClose} className="w-10 h-10 border border-white/10 rounded-full flex items-center justify-center">
+            <motion.button 
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onClose} 
+              className="w-10 h-10 border border-white/10 rounded-full flex items-center justify-center"
+            >
               <X className="text-white/40" size={18} />
-            </button>
+            </motion.button>
           )}
         </div>
 
@@ -202,6 +214,29 @@ export const FocusMode: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ 
 
           {!isActive && (
             <div className="flex flex-col items-center gap-6 w-full max-w-xs">
+              {/* Potential Rewards Display */}
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full bg-white/[0.03] border border-white/5 rounded-[32px] p-4 flex justify-around items-center"
+              >
+                <div className="flex flex-col items-center">
+                  <span className="text-white/20 text-[8px] font-bold uppercase tracking-widest mb-1">Potential XP</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_cyan]" />
+                    <span className="text-white font-bold text-sm">+{duration * 5}</span>
+                  </div>
+                </div>
+                <div className="w-px h-8 bg-white/5" />
+                <div className="flex flex-col items-center">
+                  <span className="text-white/20 text-[8px] font-bold uppercase tracking-widest mb-1">Potential Coins</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgb(168,85,247)]" />
+                    <span className="text-white font-bold text-sm">+{mode === 'Grind' ? duration * 2 : duration}</span>
+                  </div>
+                </div>
+              </motion.div>
+
               <div className="flex flex-col gap-4 w-full">
                 <div className="flex gap-2 bg-white/5 p-1 rounded-2xl border border-white/5">
                   {durations.map((d) => (

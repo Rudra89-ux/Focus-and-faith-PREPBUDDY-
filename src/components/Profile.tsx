@@ -40,13 +40,25 @@ export const Profile: React.FC = () => {
   return (
     <div className="flex flex-col gap-6 pb-32">
       <div className="px-6 pt-12 flex flex-col items-center gap-6">
-         <div className="relative">
-            <div className="w-24 h-24 rounded-[32px] bg-gradient-to-br from-white/10 to-white/5 border border-white/20 flex items-center justify-center text-4xl shadow-2xl">
-                {profile.displayName[0]}
-            </div>
-            <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-black border border-white/20 rounded-2xl flex items-center justify-center shadow-lg">
+         <div className="relative group">
+            <motion.div 
+              animate={{ 
+                boxShadow: ["0 0 0px rgba(168,85,247,0)", "0 0 40px rgba(168,85,247,0.2)", "0 0 0px rgba(168,85,247,0)"] 
+              }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="w-24 h-24 rounded-[32px] bg-gradient-to-br from-white/10 to-white/5 border border-white/20 flex items-center justify-center text-4xl shadow-2xl relative overflow-hidden"
+            >
+                <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 via-transparent to-cyan-500/10 opacity-50" />
+                <span className="relative z-10">{profile.displayName[0]}</span>
+            </motion.div>
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              whileHover={{ scale: 1.2, rotate: 15 }}
+              className="absolute -bottom-2 -right-2 w-10 h-10 bg-black border border-white/20 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer"
+            >
                 <Star className="text-yellow-400" size={18} fill="currentColor" />
-            </div>
+            </motion.div>
          </div>
          
          <div className="text-center">
@@ -55,13 +67,31 @@ export const Profile: React.FC = () => {
          </div>
 
          <div className="flex gap-4 w-full">
-            <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-[28px] flex flex-col items-center">
-                <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest mb-1">Focus Time</span>
-                <span className="text-white font-bold text-lg">{Math.floor(profile.totalFocusMinutes / 60)}h</span>
+            <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-[28px] flex flex-col items-center group relative overflow-hidden">
+                <motion.div 
+                  className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  animate={{ opacity: [0, 0.05, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+                <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest mb-1 z-10">Focus Time</span>
+                <span className="text-white font-bold text-lg z-10">{Math.floor(profile.totalFocusMinutes / 60)}h</span>
             </div>
-            <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-[28px] flex flex-col items-center">
-                <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest mb-1">Best Streak</span>
-                <span className="text-white font-bold text-lg">{profile.streak}d</span>
+            <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-[28px] flex flex-col items-center group relative overflow-hidden">
+                <motion.div 
+                  className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  animate={{ opacity: [0, 0.05, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity }}
+                />
+                <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest mb-1 z-10">Best Streak</span>
+                <div className="flex items-center gap-2 z-10">
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <Star className="text-purple-400" size={14} fill="currentColor" />
+                  </motion.div>
+                  <span className="text-white font-bold text-lg">{profile.streak}d</span>
+                </div>
             </div>
          </div>
       </div>
